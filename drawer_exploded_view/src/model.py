@@ -14,15 +14,19 @@ ZB = REC + TBOT                    # top of bottom = underside of back / sub-fro
 RZ0, RZ1 = ZB + STOP, H - STOP     # rabbet / tab height range
 
 OAK_T = 0.75
+GROOVE = 0.25                      # Rev B: dado in both sides that captures the bottom
 
 
-def parts():
+def parts(rev='B'):
+    g = GROOVE if rev == 'B' else 0.0
+    gl = [(TS - g, TS, 0, D, REC, ZB)] if g else []
+    gr = [(W - TS, W - TS + g, 0, D, REC, ZB)] if g else []
     P = {}
     P['side_l'] = Part(1, [(0, TS, 0, D, 0, H)],
-                       [(LIP, TS, D - TB, D, RZ0, RZ1), (LIP, TS, 0, TB, RZ0, RZ1)],
+                       [(LIP, TS, D - TB, D, RZ0, RZ1), (LIP, TS, 0, TB, RZ0, RZ1)] + gl,
                        'mel', 0, name='side_l')
     P['side_r'] = Part(2, [(W - TS, W, 0, D, 0, H)],
-                       [(W - TS, W - LIP, D - TB, D, RZ0, RZ1), (W - TS, W - LIP, 0, TB, RZ0, RZ1)],
+                       [(W - TS, W - LIP, D - TB, D, RZ0, RZ1), (W - TS, W - LIP, 0, TB, RZ0, RZ1)] + gr,
                        'mel', 0, name='side_r')
 
     def end_panel(pid, y0, name):
@@ -33,7 +37,7 @@ def parts():
 
     P['back'] = end_panel(3, D - TB, 'back')
     P['front'] = end_panel(4, 0, 'front')
-    P['bottom'] = Part(5, [(TS, W - TS, 0, D, REC, ZB)], (), 'mel', 2, name='bottom')
+    P['bottom'] = Part(5, [(TS - g, W - TS + g, 0, D, REC, ZB)], (), 'mel', 2, name='bottom')
     P['oak'] = Part(6, [(-0.5, W + 0.5, -OAK_T, 0, -0.75, H + 0.5)], (), 'oak', 1, name='oak')
 
     def lock(pid, x0, x1, name):
